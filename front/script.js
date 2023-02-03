@@ -12,7 +12,7 @@ function getLampIcon(status) {
 }
 
 async function init() {
-  const response = await fetch('http://localhost:3000/light');
+  const response = await fetch('https://svitloe.coderak.net/light');
   const data = await response.json();
 
   const textShort = getStatus(data[0].light).charAt(0).toUpperCase() + getStatus(data[0].light).slice(1);
@@ -28,7 +28,7 @@ async function init() {
 }
 
 async function stats() {
-  const response = await fetch('http://localhost:3000/light/all');
+  const response = await fetch('https://svitloe.coderak.net/light/all');
   const data = await response.json();
 
   const table = data.map(item => {
