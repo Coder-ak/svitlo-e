@@ -26,8 +26,8 @@ async function init() {
   const response = await fetch(url + '/light');
   const { timestamp, light } = await response.json();
 
-  const textShort = getStatus(data.light).charAt(0).toUpperCase() + getStatus(data.light).slice(1);
-  const textFull = `З ${formatDate(data.timestamp)} ${getStatus(data.light)}`;
+  const textShort = getStatus(light).charAt(0).toUpperCase() + getStatus(light).slice(1);
+  const textFull = `З ${formatDate(timestamp)} ${getStatus(light)}`;
 
   document.getElementById('content').innerText = textFull;
 
