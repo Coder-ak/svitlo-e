@@ -90,8 +90,8 @@ app.get('/light/all', (req, res) => {
 
 app.get('/light/img', async (req, res) => {
 
-  db.find({}).sort({ timestamp: -1 }).limit(1).exec(async (err, data) => {
-    const image = await drawImage(data[0]);
+  db.findOne({}).sort({ timestamp: -1 }).exec(async (err, data) => {
+    const image = await drawImage(data);
     const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
     res.setHeader('Content-type', 'image/jpeg');
     res.set('Content-disposition', 'inline; filename=svitlo.jpeg');
