@@ -43,14 +43,14 @@ async function drawImage(data) {
   image.print(
     font, 
     0,
-    -100,
+    -50,
     {
       text: textFull,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
       alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM
     },
-    1140,
-    1140
+    600,
+    600
   );
   return image;
 }
