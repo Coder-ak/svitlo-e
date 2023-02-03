@@ -1,3 +1,5 @@
+const url = 'https://svitloe.coderak.net';
+
 function getStatus(status) {
   return status ? 'світло є!' : 'світла нема :(';
 }
@@ -11,8 +13,17 @@ function getLampIcon(status) {
   return `lamp_${status ? 'on' : 'off'}`;
 }
 
+function secondsToTime(totalSeconds) {
+  let hours = Math.floor(totalSeconds / 3600);
+  totalSeconds %= 3600;
+  let minutes = Math.floor(totalSeconds / 60);
+  let seconds = Math.floor(totalSeconds % 60);
+
+  return "[" + String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0") + "]";
+}
+
 async function init() {
-  const response = await fetch('https://svitloe.coderak.net/light');
+  const response = await fetch(url + '/light');
   const data = await response.json();
 
   const textShort = getStatus(data[0].light).charAt(0).toUpperCase() + getStatus(data[0].light).slice(1);
@@ -28,11 +39,13 @@ async function init() {
 }
 
 async function stats() {
-  const response = await fetch('https://svitloe.coderak.net/light/all');
+  const response = await fetch(url + '/light/all');
   const data = await response.json();
 
-  const table = data.map(item => {
-    return `<div class="${item.light ? 'on' : 'off'}"><img src="lamp_${item.light ? 'on' : 'off'}.png" title="${item.light ? 'Увімкнено' : 'Вимкнено'}"/> ${formatDate(item.timestamp, true)}</div>`
+  const table = data.map((item, index) => {
+    const diff = item.timestamp - data[index + 1]?.timestamp || 0;
+
+    return `<div class="${item.light ? 'on' : 'off'}"><img src="lamp_${item.light ? 'on' : 'off'}.png" title="${item.light ? 'Увімкнено' : 'Вимкнено'}"/> ${formatDate(item.timestamp, true)} <span class="${item.light ? 'off' : 'on'}">${secondsToTime(diff/1000)}</span></div>`
   });
 
   document.getElementById('stats').innerHTML = table.join('\n');
