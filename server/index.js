@@ -75,7 +75,7 @@ app.post('/light', authenticateToken, (req, res) => {
 });
 
 app.get('/light', (req, res) => {
-  db.find({}).sort({ timestamp: -1 }).limit(1).exec((err, data) => {
+  db.findOne({}).sort({ timestamp: -1 }).exec((err, data) => {
     // console.log('Data', data);
     res.send(data);
   });

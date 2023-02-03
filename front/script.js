@@ -24,10 +24,10 @@ function secondsToTime(totalSeconds) {
 
 async function init() {
   const response = await fetch(url + '/light');
-  const data = await response.json();
+  const { timestamp, light } = await response.json();
 
-  const textShort = getStatus(data[0].light).charAt(0).toUpperCase() + getStatus(data[0].light).slice(1);
-  const textFull = `З ${formatDate(data[0].timestamp)} ${getStatus(data[0].light)}`;
+  const textShort = getStatus(data.light).charAt(0).toUpperCase() + getStatus(data.light).slice(1);
+  const textFull = `З ${formatDate(data.timestamp)} ${getStatus(data.light)}`;
 
   document.getElementById('content').innerText = textFull;
 
@@ -35,7 +35,7 @@ async function init() {
   document.querySelectorAll('meta[property=og\\:title]')[0].setAttribute('content', textShort)
   document.querySelectorAll('meta[property=og\\:description]')[0].setAttribute('content', textFull)
   document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content',
-    `https://svitloe.coderak.net/light_${data[0].light ? 'on' : 'off'}.jpg?rnd=${Math.floor(Math.random() * 1000000000)}`);
+    `https://svitloe.coderak.net/light_${light ? 'on' : 'off'}.jpg?rnd=${Math.floor(Math.random() * 1000000000)}`);
 }
 
 async function stats() {
