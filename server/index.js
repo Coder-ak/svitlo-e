@@ -94,7 +94,7 @@ app.get('/light/img', async (req, res) => {
     const image = await drawImage(data[0]);
     const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
     res.setHeader('Content-type', 'image/jpeg');
-    res.set('Content-disposition', 'attachment; filename=svitlo.jpeg');
+    res.set('Content-disposition', 'inline; filename=svitlo.jpeg');
     res.send(buffer);
   });
 });
