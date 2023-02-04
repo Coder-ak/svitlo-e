@@ -23,7 +23,7 @@ function secondsToTime(totalSeconds) {
 }
 
 async function init() {
-  const response = await fetch(url + '/light');
+  const response = await fetch(url + '/light/');
   const { timestamp, light } = await response.json();
 
   const textShort = getStatus(light).charAt(0).toUpperCase() + getStatus(light).slice(1);
