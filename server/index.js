@@ -6,6 +6,7 @@ const Jimp = require('jimp');
 const db = new Datastore({ filename: __dirname + '/db/svitlo.db', autoload: true });
 db.ensureIndex({ fieldName: 'timestamp', unique: true });
 const cors = require('cors')
+const randomstring = require("randomstring");
 
 const app = express();
 
@@ -94,7 +95,7 @@ app.get('/light/img', async (req, res) => {
     const image = await drawImage(data);
     const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
     res.setHeader('Content-type', 'image/jpeg');
-    res.set('Content-disposition', 'inline; filename=svitlo.jpeg');
+    res.set('Content-disposition', 'inline; filename=' + randomstring.generate(10) + '.jpeg');
     res.send(buffer);
   });
 });
