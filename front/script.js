@@ -35,7 +35,7 @@ async function init() {
   document.querySelectorAll('meta[property=og\\:title]')[0].setAttribute('content', textShort)
   document.querySelectorAll('meta[property=og\\:description]')[0].setAttribute('content', textFull)
   document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content',
-    `https://svitloe.coderak.net/light_${light ? 'on' : 'off'}.jpg?rnd=${Math.floor(Math.random() * 1000000000)}`);
+    `https://svitloe.coderak.net/assets/light_${light ? 'on' : 'off'}.jpg?rnd=${Math.floor(Math.random() * 1000000000)}`);
 }
 
 async function stats() {
@@ -46,7 +46,7 @@ async function stats() {
     const diff = item.timestamp - data[index + 1]?.timestamp || 0;
 
     return `<div class="grid ${item.light ? 'on' : 'off'}">
-      <img src="lamp_${item.light ? 'on' : 'off'}.svg" title="${item.light ? 'Увімкнено' : 'Вимкнено'}" class="icon"/> <div class="time">${formatDate(item.timestamp, true)}</div> <div class="diff ${item.light ? 'off' : 'on'}">${secondsToTime(diff/1000)}</div></div>`
+      <img src="assets/lamp_${item.light ? 'on' : 'off'}.svg" title="${item.light ? 'Увімкнено' : 'Вимкнено'}" class="icon"/> <div class="time">${formatDate(item.timestamp, true)}</div> <div class="diff ${item.light ? 'off' : 'on'}">${secondsToTime(diff/1000)}</div></div>`
   });
 
   document.getElementById('stats').innerHTML = table.join('\n');
