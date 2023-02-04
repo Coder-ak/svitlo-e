@@ -12,7 +12,7 @@ p {text-align:center; margin-left:auto;margin-right:auto; margin-top: 12px;}
 .col {flex: 1; white-space: nowrap;}
 .icon {flex-shrink: 0 ;width: 36px}
 .time {flex-grow: 1}
-.diff {flex-grow: 1; max-width: 80px}
+.diff {flex-grow: 1; max-width: 80px; text-align: center;}
 .footer {padding-top: 8px;}
 a:link {color: #34536A;}
 a:visited {color: #34536A;}
