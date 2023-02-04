@@ -10,6 +10,9 @@ const randomstring = require("randomstring");
 
 const app = express();
 
+app.use(express.json());
+// app.use(cors());
+
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
@@ -55,9 +58,6 @@ async function drawImage(data) {
   );
   return image;
 }
-
-app.use(express.json());
-// app.use(cors());
 
 app.post('/light', authenticateToken, (req, res) => {
   // console.log(req.body)

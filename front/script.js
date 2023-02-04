@@ -45,7 +45,8 @@ async function stats() {
   const table = data.map((item, index) => {
     const diff = item.timestamp - data[index + 1]?.timestamp || 0;
 
-    return `<div class="${item.light ? 'on' : 'off'}"><img src="lamp_${item.light ? 'on' : 'off'}.png" title="${item.light ? 'Увімкнено' : 'Вимкнено'}"/> ${formatDate(item.timestamp, true)} <span class="${item.light ? 'off' : 'on'}">${secondsToTime(diff/1000)}</span></div>`
+    return `<div class="grid ${item.light ? 'on' : 'off'}">
+      <img src="lamp_${item.light ? 'on' : 'off'}.svg" title="${item.light ? 'Увімкнено' : 'Вимкнено'}" class="icon"/> <div class="time">${formatDate(item.timestamp, true)}</div> <div class="diff ${item.light ? 'off' : 'on'}">${secondsToTime(diff/1000)}</div></div>`
   });
 
   document.getElementById('stats').innerHTML = table.join('\n');

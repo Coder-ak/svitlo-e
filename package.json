@@ -14,8 +14,13 @@
   },
   "scripts": {
     "start": "node ./server/index.js",
-    "develop": "nodemon ./server/index.js"
+    "server": "nodemon ./server/index.js",
+    "front": "http-server ./front",
+    "develop": "concurrently --kill-others 'npm run server' 'npm run front'"
   },
   "author": "Coder_AK",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
 }
