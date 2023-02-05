@@ -23,6 +23,13 @@ function secondsToTime(totalSeconds) {
   return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
 }
 
+function showDiff(light, timestamp) {
+  const diff = new Date().getTime() - timestamp;
+  const textDiff = `Світ ${light ? 'є' : 'відсутній'} ${secondsToTime(diff)}`
+
+  document.getElementById('vidkl').innerText = textDiff;
+}
+
 async function init() {
   const response = await fetch(url + '/light/');
   const { timestamp, light } = await response.json();
@@ -30,12 +37,9 @@ async function init() {
   const textShort = getStatus(light).charAt(0).toUpperCase() + getStatus(light).slice(1);
   const textFull = `З ${formatDate(timestamp)} ${getStatus(light)}`;
 
-  const diff = new Date().getTime() - timestamp;
-  console.log(new Date().getTime(), timestamp);
-  const textDiff = `Світ ${light ? 'є' : 'відсутній'} ${secondsToTime(diff)}`
-
   document.getElementById('content').innerText = textFull;
-  document.getElementById('vidkl').innerText = textDiff;
+
+  setInterval(() => showDiff(light, timestamp), 1000);
 
   document.title = textShort;
   document.querySelectorAll('meta[property=og\\:title]')[0].setAttribute('content', textShort)
