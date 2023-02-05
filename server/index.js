@@ -40,7 +40,7 @@ function formatDate(timestamp, long = false) {
 }
 
 async function drawImage(data) {
-  const font = await Jimp.loadFont(__dirname + 'assets/arial-bold.fnt');
+  const font = await Jimp.loadFont(__dirname + '/assets/arial-bold.fnt');
   const image = await Jimp.read(`${__dirname}/assets/light_${data.light ? 'on' : 'off'}.jpeg`);
   const textFull = `З ${formatDate(data.timestamp)} ${getStatus(data.light)}`;
 
