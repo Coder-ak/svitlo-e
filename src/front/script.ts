@@ -2,7 +2,7 @@ import { SvitloData } from "../interfaces/svitlo-data";
 
 export class Svitlo {
 
-  private static readonly url = 'https://svitloe.coderak.net';
+  private static readonly url = 'https://svitloe.coderak.net'; // http://localhost:3000
 
   constructor() {
     console.log('constructor');
@@ -41,7 +41,7 @@ export class Svitlo {
   }
 
   private async init() {
-    const response = await fetch(Svitlo.url + '/light/');
+    const response = await fetch(Svitlo.url + '/light/rad0');
     const { timestamp, light } = await response.json();
 
     const textShort = this.getStatus(light).charAt(0).toUpperCase() + this.getStatus(light).slice(1);
@@ -53,14 +53,10 @@ export class Svitlo {
     setInterval(() => this.showDiff({light, timestamp}), 1000);
 
     document.title = textShort;
-    // document.querySelectorAll('meta[property=og\\:title]')[0].setAttribute('content', textShort)
-    // document.querySelectorAll('meta[property=og\\:description]')[0].setAttribute('content', textFull)
-    // document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content',
-    //   `https://svitloe.coderak.net/assets/light_${light ? 'on' : 'off'}.jpg?rnd=${Math.floor(Math.random() * 1000000000)}`);
   }
 
   private async stats() {
-    const response = await fetch(Svitlo.url + '/light/all');
+    const response = await fetch(Svitlo.url + '/light/all/rad0');
     const data: SvitloData[] = await response.json();
 
     const table = data.map((item, index) => {

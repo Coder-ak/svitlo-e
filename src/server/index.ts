@@ -25,14 +25,12 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.TOKEN_SECRET as Secret, (err, user) => {
-    // console.log(err)
-
+  jwt.verify(token, process.env.TOKEN_SECRET as Secret, (err, data) => {
     if (err) {
       return res.sendStatus(403);
     }
 
-    req.body.user = user;
+    req.body.area = (data as {area: string}).area;
 
     next();
   })
@@ -67,9 +65,16 @@ const drawImage = async (data: SvitloData) => {
   return image;
 }
 
+enum areas {
+  ['rad0'] = 'rad0',
+  ['rad1'] = 'rad1',
+  ['rad2'] = 'rad2',
+};
+
 app.post('/light', authenticateToken, (req, res, next) => {
-  // console.log(req.body)
-  const { light } = req.body;
+  const { light, user } = req.body;
+  console.log('user', user);
+  
   if (light == null) {
     res.send("not-ok");
     return;
@@ -77,29 +82,30 @@ app.post('/light', authenticateToken, (req, res, next) => {
 
   db.insert({
     "timestamp": Date.now(),
-    "light": light
+    "light": !!light,
+    "area": user
   });
 
   res.send("zaeb-ok");
 });
 
-app.get('/light', (req, res) => {
-  (db as any).findOne({}).sort({ timestamp: -1 }).exec((err: Error, data: SvitloData) => {
-    console.log('Data', data);
+app.get('/light/:id?', (req, res) => {
+  (db as any).findOne(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error, data: SvitloData) => {
     res.send(data);
   });
 });
 
-app.get('/light/all', (req, res) => {
-  db.find({}).sort({ timestamp: -1 }).exec((err: Error | null, data: SvitloData[]) => {
-    // console.log('Data', data);
+app.get('/light/all/:id?', (req, res) => {
+  console.log('param', req.params.id);
+  
+  db.find(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error | null, data: SvitloData[]) => {
     res.send(data);
   });
 });
 
-app.get('/light/img', async (req, res) => {
+app.get('/light/img/:id?', async (req, res) => {
 
-  (db as any).findOne({}).sort({ timestamp: -1 }).exec(async (err: Error, data: SvitloData) => {
+  (db as any).findOne(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec(async (err: Error, data: SvitloData) => {
     const image = await drawImage(data);
     const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
     res.setHeader('Content-type', 'image/jpeg');
