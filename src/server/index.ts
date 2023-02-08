@@ -72,8 +72,7 @@ enum areas {
 };
 
 app.post('/light', authenticateToken, (req, res, next) => {
-  const { light, user } = req.body;
-  console.log('user', user);
+  const { light, area } = req.body;
   
   if (light == null) {
     res.send("not-ok");
@@ -83,7 +82,7 @@ app.post('/light', authenticateToken, (req, res, next) => {
   db.insert({
     "timestamp": Date.now(),
     "light": !!light,
-    "area": user
+    "area": areas[(area as areas)]
   });
 
   res.send("zaeb-ok");
@@ -96,8 +95,6 @@ app.get('/light/:id?', (req, res) => {
 });
 
 app.get('/light/all/:id?', (req, res) => {
-  console.log('param', req.params.id);
-  
   db.find(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error | null, data: SvitloData[]) => {
     res.send(data);
   });
