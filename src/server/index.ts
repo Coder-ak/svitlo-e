@@ -71,10 +71,16 @@ enum areas {
   ['rad2'] = 'rad2',
 };
 
+const getArea = (areaId: string): areas => {
+  return areas[(areaId as areas)];
+}
+
 app.post('/light', authenticateToken, (req, res, next) => {
   const { light, area } = req.body;
   
-  if (light == null) {
+  console.log('payoad', new Date(), light, area);
+  
+  if (light == null || area == null) {
     res.send("not-ok");
     return;
   }
@@ -82,27 +88,27 @@ app.post('/light', authenticateToken, (req, res, next) => {
   db.insert({
     "timestamp": Date.now(),
     "light": !!light,
-    "area": areas[(area as areas)]
+    "area": getArea(area)
   });
 
   res.send("zaeb-ok");
 });
 
 app.get('/light/:id?', (req, res) => {
-  (db as any).findOne(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error, data: SvitloData) => {
+  (db as any).findOne(req.params.id ? {area: getArea(req.params.id)} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error, data: SvitloData) => {
     res.send(data);
   });
 });
 
 app.get('/light/all/:id?', (req, res) => {
-  db.find(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error | null, data: SvitloData[]) => {
+  db.find(req.params.id ? {area: getArea(req.params.id)} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec((err: Error | null, data: SvitloData[]) => {
     res.send(data);
   });
 });
 
 app.get('/light/img/:id?', async (req, res) => {
 
-  (db as any).findOne(req.params.id ? {area: areas[req.params.id as areas]} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec(async (err: Error, data: SvitloData) => {
+  (db as any).findOne(req.params.id ? {area: getArea(req.params.id)} : {}, {light: 1, timestamp: 1, _id: 0}).sort({ timestamp: -1 }).exec(async (err: Error, data: SvitloData) => {
     const image = await drawImage(data);
     const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
     res.setHeader('Content-type', 'image/jpeg');
