@@ -3,6 +3,7 @@ import nodeExternals from "webpack-node-externals";
 import { Configuration } from "webpack";
 import WebpackShellPluginNext from "webpack-shell-plugin-next";
 import CopyPlugin from "copy-webpack-plugin";
+
 const getConfig = (
     argv: { [key: string]: string }
 ): Configuration => {

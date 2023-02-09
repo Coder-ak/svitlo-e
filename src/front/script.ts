@@ -2,10 +2,7 @@ import { SvitloData } from "../interfaces/svitlo-data";
 
 export class Svitlo {
 
-  private static readonly url = 'https://svitloe.coderak.net'; // http://localhost:3000
-
   constructor() {
-    console.log('constructor');
     this.init();
     this.stats();
   }
@@ -41,7 +38,7 @@ export class Svitlo {
   }
 
   private async init() {
-    const response = await fetch(Svitlo.url + '/light/rad0');
+    const response = await fetch('/light/rad0');
     const { timestamp, light } = await response.json();
 
     const textShort = this.getStatus(light).charAt(0).toUpperCase() + this.getStatus(light).slice(1);
@@ -56,7 +53,7 @@ export class Svitlo {
   }
 
   private async stats() {
-    const response = await fetch(Svitlo.url + '/light/all/rad0');
+    const response = await fetch('/light/all/rad0');
     const data: SvitloData[] = await response.json();
 
     const table = data.map((item, index) => {
