@@ -16,13 +16,12 @@
     "clean:dev": "rimraf build",
     "clean:dist": "rimraf dist/*",
     "build": "npx webpack --mode production --config webpack.prod.ts",
-    "dev": "concurrently --kill-others 'nodemon build/server/index.js --watch build -- develop' 'http-server build/front --cors'",
+    "dev": "concurrently --kill-others 'nodemon build/server/index.js --watch build -- develop' 'http-server build/front --cors --proxy http://localhost:3000'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Coder_AK",
   "license": "ISC",
   "devDependencies": {
-    "@types/copy-webpack-plugin": "^10.1.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.1",
@@ -41,7 +40,6 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-standard": "^5.0.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.3",
     "rimraf": "^4.1.2",
