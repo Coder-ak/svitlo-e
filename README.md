@@ -1,6 +1,6 @@
 # SVITLO-E
 
-SVITLO-E is an open-source project that aims to create a platform for easy and fast data visualization.
+SVITLO-E is an open-source project that aims to create a platform for tracking power outages in your area.
 
 ## Getting Started
 
