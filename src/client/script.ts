@@ -1,7 +1,8 @@
-import { SvitloData } from "../interfaces/svitlo-data";
+import { SvitloData } from '../interfaces/svitlo-data';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
 
 export class Svitlo {
-
   constructor() {
     this.init();
     this.stats();
@@ -12,7 +13,9 @@ export class Svitlo {
   }
 
   private formatDate(timestamp: number, long = false) {
-    const options = long ? {weekday: 'long', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'} : {timeStyle: 'short'};
+    const options = long ? { weekday: 'long', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' } : { timeStyle: 'short' };
+    console.log('date', format(timestamp, 'E, hh:mm', { locale: uk }));
+
     return new Date(timestamp).toLocaleTimeString('uk-UA', <any>options);
   }
 
@@ -27,12 +30,12 @@ export class Svitlo {
     let minutes = Math.floor(totalSeconds / 60);
     let seconds = Math.floor(totalSeconds % 60);
 
-    return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    return String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
   }
 
-  private showDiff({light, timestamp}: SvitloData) {
+  private showDiff({ light, timestamp }: SvitloData) {
     const diff = new Date().getTime() - timestamp;
-    const textDiff = `Світ ${light ? 'є' : 'відсутній'} ${this.secondsToTime(diff)}`
+    const textDiff = `Світ ${light ? 'є' : 'відсутній'} ${this.secondsToTime(diff)}`;
 
     document.getElementById('vidkl')!.innerText = textDiff;
   }
@@ -46,8 +49,8 @@ export class Svitlo {
 
     document.getElementById('content')!.innerText = textFull;
 
-    this.showDiff({light, timestamp});
-    setInterval(() => this.showDiff({light, timestamp}), 1000);
+    this.showDiff({ light, timestamp });
+    setInterval(() => this.showDiff({ light, timestamp }), 1000);
 
     document.title = textShort;
   }
@@ -60,14 +63,17 @@ export class Svitlo {
       const diff = item.timestamp - data[index + 1]?.timestamp || 0;
 
       return `<div class="grid ${item.light ? 'on' : 'off'}">
-        <img src="assets/lamp_${item.light ? 'on' : 'off'}.svg" title="${item.light ? 'Увімкнено' : 'Вимкнено'}" class="icon"/> <div class="time">${this.formatDate(item.timestamp, true)}</div> <div class="diff ${item.light ? 'off' : 'on'}">[${this.secondsToTime(diff)}]</div></div>`
+        <img src="assets/lamp_${item.light ? 'on' : 'off'}.svg" title="${
+        item.light ? 'Увімкнено' : 'Вимкнено'
+      }" class="icon"/> <div class="time">${this.formatDate(item.timestamp, true)}</div> <div class="diff ${
+        item.light ? 'off' : 'on'
+      }">[${this.secondsToTime(diff)}]</div></div>`;
     });
 
     document.getElementById('stats')!.innerHTML = table.join('\n');
   }
-
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   new Svitlo();
 });
