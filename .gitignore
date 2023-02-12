@@ -15,7 +15,13 @@
 /out/
 
 # production
-/dist
+/dist/*
+!/dist/server
+/dist/server/*
+!/dist/server/assets
+!/dist/client
+/dist/client/script*
+
 
 # misc
 .DS_Store

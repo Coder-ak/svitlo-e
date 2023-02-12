@@ -1,0 +1,21 @@
+body {font-size:12px; background-color: #ccc; color:#222; font-family:tahoma,arial; text-align:center;}
+h1 {font-size:64px; color:#222; margin: 70px 0 50px 0;}
+p {text-align:center; margin-left:auto;margin-right:auto; margin-top: 12px;}
+hr {margin: 20px 0;}
+#content {width:100%; text-align:center; margin-left:auto;margin-right:auto;font-size:66px;font-weight:bold;}
+.stats {margin-left:auto;margin-right:auto; font-size: 14px; width: 320px}
+.stats img {height: 18px}
+.stats .on {color: #fff}
+.stats .off {color: #222}
+.link {text-transform: uppercase;}
+.grid {display: flex; flex-direction: row; line-height: 22px; text-align: left; border-bottom: 1px solid #77777721;}
+.header {border-bottom: 1px solid #777; margin-bottom: 4px;}
+.col {flex: 1; white-space: nowrap;}
+.icon {flex-shrink: 0 ;width: 36px}
+.time {flex-grow: 1}
+.diff {flex-grow: 1; max-width: 80px; text-align: center;}
+.footer {padding-top: 8px;}
+a:link {color: #34536A;}
+a:visited {color: #34536A;}
+a:active {color: #34536A;}
+a:hover {color: #34536A;}
