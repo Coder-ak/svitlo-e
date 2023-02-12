@@ -1,6 +1,7 @@
-import * as esbuild from 'esbuild'
+import esbuild from 'esbuild';
+import { livereloadPlugin } from '@jgoz/esbuild-plugin-livereload';
 
-const watch = process.argv.includes("--watch");
+const watch = process.argv.includes('--watch');
 
 const buildOptions = {
   entryPoints: ['./src/client/script.ts'],
@@ -13,6 +14,7 @@ const buildOptions = {
 };
 
 if (watch) {
+  buildOptions.plugins = [livereloadPlugin()];
   const ctx = await esbuild.context(buildOptions);
   await ctx.watch();
 } else {

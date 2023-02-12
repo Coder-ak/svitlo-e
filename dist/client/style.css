@@ -2,6 +2,10 @@ body {font-size:12px; background-color: #ccc; color:#222; font-family:tahoma,ari
 h1 {font-size:64px; color:#222; margin: 70px 0 50px 0;}
 p {text-align:center; margin-left:auto;margin-right:auto; margin-top: 12px;}
 hr {margin: 20px 0;}
+a:link {color: #34536A;}
+a:visited {color: #34536A;}
+a:active {color: #34536A;}
+a:hover {color: #34536A;}
 #content {width:100%; text-align:center; margin-left:auto;margin-right:auto;font-size:66px;font-weight:bold;}
 .stats {margin-left:auto;margin-right:auto; font-size: 14px; width: 320px}
 .stats img {height: 18px}
@@ -13,9 +17,19 @@ hr {margin: 20px 0;}
 .col {flex: 1; white-space: nowrap;}
 .icon {flex-shrink: 0 ;width: 36px}
 .time {flex-grow: 1}
-.diff {flex-grow: 1; max-width: 80px; text-align: center;}
+.diff {flex-grow: 1; max-width: 90px; text-align: left;}
 .footer {padding-top: 8px;}
-a:link {color: #34536A;}
-a:visited {color: #34536A;}
-a:active {color: #34536A;}
-a:hover {color: #34536A;}
+.error {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #ae0c0c;
+  background-color: #d3bcbc;
+  border: 1px solid #ae0c0c;
+  border-radius: 6px;
+  padding: 12px;
+}
+

@@ -108,6 +108,7 @@ app.get('/light/:id?', (req, res) => {
 app.get('/light/all/:id?', (req, res) => {
   db.find(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
+    .limit(parseInt(req.query.limit as string || '0', 10))
     .exec((err: Error | null, data: SvitloData[]) => {
       res.send(data);
     });
