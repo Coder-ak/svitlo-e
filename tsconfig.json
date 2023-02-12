@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+      "target": "es2015",
+      "module": "commonjs",
+      "sourceMap": true,
+      "strict": true,
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "allowJs": true,
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "baseUrl": "."
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+      "node_modules", "src/**/*.spec.ts", 
+      "src/server/**/__tests__/*.ts"
+  ]
+}
