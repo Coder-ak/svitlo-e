@@ -1,7 +1,9 @@
 module.exports = {
-  apps : [{
-    name   : "svitloe",
-    script : "dist/server/index.js",
-    watch  : true
-  }]
-}
+  apps: [
+    {
+      name: 'svitloe',
+      script: 'dist/server/index.js',
+      watch: ['dist/server'],
+    },
+  ],
+};
