@@ -6,13 +6,12 @@ import Jimp from 'jimp';
 import Randomstring from 'randomstring';
 import jwt, { Secret } from 'jsonwebtoken';
 import { SvitloData } from '../interfaces/svitlo-data';
+import path from 'path';
 
 dotenv.config({ path: '.env' });
 
 const app: Express = express();
 const db = new Nedb<SvitloData>({ filename: process.env.DB_PATH, autoload: true });
-
-
 
 if (process.argv.includes('develop')) {
   app.use(cors());
@@ -20,7 +19,7 @@ if (process.argv.includes('develop')) {
 app.use(express.json());
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'];
+  const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
 
   if (token == null) {
@@ -48,8 +47,9 @@ const formatDate = (timestamp: number, long = false) => {
 };
 
 const drawImage = async (data: SvitloData) => {
-  const font = await Jimp.loadFont(__dirname + '/assets/arial-bold.fnt');
-  const image = await Jimp.read(`${__dirname}/assets/light_${data.light ? 'on' : 'off'}.jpeg`);
+  const font = await Jimp.loadFont(path.join(__dirname, '/assets/arial-bold.fnt'));
+  const imgPath = `/assets/light_${data.light ? 'on' : 'off'}.jpeg`;
+  const image = await Jimp.read(path.join(__dirname, imgPath));
   const textFull = `З ${formatDate(data.timestamp)} ${getStatus(data.light)}`;
 
   image.print(
@@ -67,14 +67,14 @@ const drawImage = async (data: SvitloData) => {
   return image;
 };
 
-enum areas {
-  rad0 = 'rad0',
-  rad1 = 'rad1',
-  rad2 = 'rad2',
-}
+const areas: { [key: string]: string } = {
+  rad0: 'rad0',
+  rad1: 'rad1',
+  rad2: 'rad2',
+};
 
 const getArea = (areaId: string): string => {
-  return areas[areaId as areas];
+  return areas[areaId];
 };
 
 app.post('/light', authenticateToken, (req, res, next) => {
@@ -101,6 +101,9 @@ app.get('/light/:id?', (req, res) => {
     .findOne(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
     .exec((err: Error, data: SvitloData) => {
+      if (err) {
+        res.status(500).send();
+      }
       res.send(data);
     });
 });
@@ -108,8 +111,11 @@ app.get('/light/:id?', (req, res) => {
 app.get('/light/all/:id?', (req, res) => {
   db.find(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
-    .limit(parseInt(req.query.limit as string || '0', 10))
+    .limit(parseInt((req.query.limit as string) || '0', 10))
     .exec((err: Error | null, data: SvitloData[]) => {
+      if (err) {
+        res.status(500).send();
+      }
       res.send(data);
     });
 });
@@ -119,6 +125,9 @@ app.get('/light/img/:id?', async (req, res) => {
     .findOne(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
     .exec(async (err: Error, data: SvitloData) => {
+      if (err) {
+        res.status(500).send();
+      }
       const image = await drawImage(data);
       const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
       res.setHeader('Content-type', 'image/jpeg');

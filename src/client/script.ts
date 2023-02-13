@@ -17,6 +17,19 @@ export class Svitlo {
     return format(timestamp, dateFormat, { locale: uk });
   }
 
+  /**
+   * Calculates and formats the duration between a start and end time.
+   *
+   * @param {number} start - The start time in milliseconds since the Unix epoch.
+   * @param {number} end - The end time in milliseconds since the Unix epoch.
+   * @returns {string} - A string representation of the duration in a human-readable format.
+   *
+   * @example
+   * const start = new Date(2021, 0, 1).getTime();
+   * const end = new Date(2021, 0, 2).getTime();
+   * console.log(formatDuration(start, end));
+   * // Output: '1д 0:0:0'
+   */
   private formatDuration(start: number, end: number): string {
     const duration = intervalToDuration({ start, end });
     return formatDuration(duration, {
@@ -29,11 +42,17 @@ export class Svitlo {
             return count ? count + 'д ' : '';
           }
           return `${this.zeroPad(count)}${_token !== 'xSeconds' ? ':' : ''}`;
-        }
+        },
       },
     });
   }
 
+  /**
+   * Adds leading zeros to a number until it reaches a certain length.
+   *
+   * @param {string} num - The number to pad with zeros.
+   * @returns {string} The padded number.
+   */
   private zeroPad(num: string): string {
     return String(num).padStart(2, '0');
   }
@@ -87,9 +106,9 @@ export class Svitlo {
       return `<div class="grid ${this.getState(item.light)}">
         <img src="assets/lamp_${this.getState(item.light)}.svg" title="${
         item.light ? 'Увімкнено' : 'Вимкнено'
-      }" class="icon"/> <div class="time">${this.formatDate(item.timestamp, true)}</div> <div class="diff ${
-        this.getState(!item.light)
-      }">${this.formatDuration(item.timestamp, data[index + 1]?.timestamp || item.timestamp)}</div></div>`;
+      }" class="icon"/> <div class="time">${this.formatDate(item.timestamp, true)}</div> <div class="diff ${this.getState(
+        !item.light
+      )}">${this.formatDuration(item.timestamp, data[index + 1]?.timestamp || item.timestamp)}</div></div>`;
     });
 
     document.getElementById('stats')!.innerHTML = table.join('\n');

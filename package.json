@@ -38,6 +38,7 @@
     "esbuild": "^0.17.7",
     "esbuild-plugin-copy": "^2.0.2",
     "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
