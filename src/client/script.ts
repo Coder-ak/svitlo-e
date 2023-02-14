@@ -86,7 +86,9 @@ export class Svitlo {
     const textShort = this.getStatus(light).charAt(0).toUpperCase() + this.getStatus(light).slice(1);
     const textFull = `З ${this.formatDate(timestamp)} ${this.getStatus(light)}`;
 
-    document.getElementById('content')!.innerText = textFull;
+    document.getElementById('status')!.innerText = textFull;
+    // eslint-disable-next-line no-undef
+    (<HTMLImageElement>document.getElementById('lamp-logo')).src = `assets/lamp_${this.getState(light)}.svg`;
 
     this.showDiff({ light, timestamp });
     setInterval(() => this.showDiff({ light, timestamp }), 1000);
@@ -103,7 +105,7 @@ export class Svitlo {
       if (index === data.length - 1) {
         return;
       }
-      return `<div class="grid ${this.getState(item.light)}">
+      return `<div class="row ${this.getState(item.light)}">
         <img src="assets/lamp_${this.getState(item.light)}.svg" title="${
         item.light ? 'Увімкнено' : 'Вимкнено'
       }" class="icon"/> <div class="time">${this.formatDate(item.timestamp, true)}</div> <div class="diff ${this.getState(

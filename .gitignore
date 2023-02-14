@@ -21,6 +21,7 @@
 !/dist/server/assets
 !/dist/client
 /dist/client/script*
+/dist/client/style*
 
 
 # misc
