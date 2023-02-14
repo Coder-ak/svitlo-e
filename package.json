@@ -1,6 +1,6 @@
 {
   "name": "svitlo-e",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Collect and display power outages info",
   "dependencies": {
     "cors": "^2.8.5",
@@ -15,7 +15,7 @@
     "build": "npm run clean:dist && npm-run-all -p build:*",
     "build:client": "node esbuild.client.mjs",
     "build:server": "node esbuild.server.mjs",
-    "clean:dist": "rimraf dist/client/script* dist/server/index*",
+    "clean:dist": "rimraf dist/client/script* dist/client/style* dist/server/index*",
     "serve:client": "http-server dist/client --cors --proxy http://localhost:3000",
     "serve": "npm run clean:dist && npm-run-all -p 'build:* -- --watch' serve:client",
     "test": "echo \"Error: no test specified and nobody cares\" && exit 1"
@@ -37,6 +37,7 @@
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.7",
     "esbuild-plugin-copy": "^2.0.2",
+    "esbuild-plugin-less": "^1.1.12",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard": "^17.0.0",
