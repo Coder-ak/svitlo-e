@@ -1,11 +1,26 @@
 import { SvitloData } from '../interfaces/svitlo-data';
 import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { uk } from 'date-fns/locale';
+import PullToRefresh from 'pulltorefreshjs';
 
 export class Svitlo {
   constructor() {
     this.init();
     this.stats();
+    this.pullToRefresh();
+  }
+
+  private pullToRefresh(): void {
+    PullToRefresh.init({
+      mainElement: 'body',
+      distMax: 104,
+      instructionsPullToRefresh: 'Потягніть вниз, щоб оновити',
+      instructionsReleaseToRefresh: 'Відпустіть, щоб оновити',
+      instructionsRefreshing: 'Оновлюється',
+      onRefresh() {
+        window.location.reload();
+      },
+    });
   }
 
   private getStatus(status: boolean) {
