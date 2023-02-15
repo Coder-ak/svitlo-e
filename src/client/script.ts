@@ -62,7 +62,7 @@ export class Svitlo {
   }
 
   private showDiff({ light, timestamp }: SvitloData) {
-    const textDiff = `Світ ${light ? 'є' : 'відсутній'} ${this.formatDuration(timestamp, new Date().getTime())}`;
+    const textDiff = `Світло ${light ? 'є' : 'відсутнє'} ${this.formatDuration(timestamp, new Date().getTime())}`;
     document.getElementById('vidkl')!.innerText = textDiff;
   }
 
