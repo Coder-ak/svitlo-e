@@ -18,7 +18,7 @@ These instructions will get you a copy of the project up and running on your loc
 ```console
 git clone https://github.com/Coder-ak/svitlo-e.git
 ```
-2. Create `.env` file with following content
+2. Create `.env` file with the following content
 
 ```
 TOKEN_SECRET=<generate secret to sign JWT tokens>
@@ -28,7 +28,7 @@ PORT=<nodejs server port>
 3. Start the development server
 
 ```console
-npm run serve
+npm run dev
 ```
 
 The nodejs server should now be running on `http://localhost:3000`
