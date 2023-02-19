@@ -19,6 +19,9 @@ if (watch) {
   buildOptions.plugins = [
     serve({
       main: 'dist/server/index.js',
+      env: {
+        DEVELOP: true,
+      },
     }),
   ];
   const ctx = await esbuild.context(buildOptions);

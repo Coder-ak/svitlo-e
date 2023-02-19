@@ -12,6 +12,8 @@ const buildOptions = {
   sourcemap: watch,
   target: 'node16',
   logLevel: 'info',
+  write: true,
+  metafile: true,
 };
 
 if (watch) {

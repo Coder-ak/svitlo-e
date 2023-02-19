@@ -1,5 +1,4 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
-import cors from 'cors';
 import * as dotenv from 'dotenv';
 import Nedb from 'nedb';
 import Jimp from 'jimp';
@@ -7,15 +6,55 @@ import Randomstring from 'randomstring';
 import jwt, { Secret } from 'jsonwebtoken';
 import { SvitloData } from '../interfaces/svitlo-data';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+
+const router = express.Router();
 
 dotenv.config({ path: '.env' });
 
 const app: Express = express();
 const db = new Nedb<SvitloData>({ filename: process.env.DB_PATH, autoload: true });
 
-if (process.argv.includes('develop')) {
-  app.use(cors());
+const swaggerDocs = () => {
+  const swaggerJSDocOptions: swaggerJSDoc.Options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Svitlo E',
+        version: '2.0.0',
+      },
+      components: {
+        schemas: {
+          SvitloData: {
+            type: 'object',
+            properties: {
+              light: {
+                type: 'number',
+                description: 'The light value.',
+              },
+              timestamp: {
+                type: 'string',
+                format: 'date-time',
+                description: 'The timestamp when the light value was measured.',
+              },
+            },
+            required: ['light', 'timestamp'],
+          },
+        },
+      },
+    },
+    apis: ['./src/server/*.ts'],
+  };
+
+  router.use('/api-docs', swaggerUi.serve);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(swaggerJSDocOptions)));
+};
+
+if (process.argv.includes('--develop') || !!process.env.DEVELOP) {
+  swaggerDocs();
 }
+
 app.use(express.json());
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
@@ -96,6 +135,36 @@ app.post('/light', authenticateToken, (req, res, next) => {
   res.send('zaeb-ok');
 });
 
+/**
+ * @openapi
+ * /light/{id}?:
+ *   get:
+ *     tags:
+ *     - Svitlo
+ *     summary: Retrieve light data for the specified area or all areas.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         allowEmptyValue: true
+ *         description: The ID of the area to retrieve light data for.
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SvitloData'
+ *       '500':
+ *         description: Internal Server Error
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} req.params - The parameters passed in the URL, including an optional "id" parameter representing the area.
+ * @param {String} [req.params.id] - The optional "id" parameter representing the area.
+ * @param {Object} res - The HTTP response object.
+ * @returns {Object} The light data for the specified area or all areas.
+ * @throws {Error} If an error occurs while retrieving the data.
+ */
 app.get('/light/:id?', (req, res) => {
   (db as any)
     .findOne(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
@@ -108,6 +177,34 @@ app.get('/light/:id?', (req, res) => {
     });
 });
 
+/**
+ * Retrieve light data for all areas or the specified area.
+ *
+ * @openapi
+ * /light/all/{id}?:
+ *   get:
+ *     tags:
+ *     - Svitlo
+ *     summary: Retrieve light data for all areas or the specified area.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         allowEmptyValue: true
+ *         description: The ID of the area to retrieve light data for.
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SvitloData'
+ *       '500':
+ *         description: Internal Server Error
+ */
 app.get('/light/all/:id?', (req, res) => {
   db.find(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
