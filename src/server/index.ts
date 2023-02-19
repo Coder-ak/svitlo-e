@@ -25,6 +25,14 @@ const swaggerDocs = () => {
         version: '2.0.0',
       },
       components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            description: 'JWT Authorization header using the Bearer scheme.',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
         schemas: {
           SvitloData: {
             type: 'object',
@@ -139,8 +147,6 @@ const getArea = (areaId: string): string => {
 };
 
 /**
- * Create a new record for a light event.
- *
  * @openapi
  * /light:
  *   post:
@@ -158,8 +164,13 @@ const getArea = (areaId: string): string => {
  *             properties:
  *               light:
  *                 type: boolean
+ *                 description: Whether the light is on or off.
  *               area:
  *                 type: string
+ *                 description: The ID of the area to add light data for.
+ *             required:
+ *               - light
+ *               - area
  *     responses:
  *       '200':
  *         description: OK
@@ -167,6 +178,7 @@ const getArea = (areaId: string): string => {
  *           application/json:
  *             schema:
  *               type: string
+ *               example: zaeb-ok
  *       '401':
  *         $ref: '#/components/responses/UnauthorizedError'
  *       '500':
