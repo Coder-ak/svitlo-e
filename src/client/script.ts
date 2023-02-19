@@ -64,9 +64,10 @@ export class Svitlo {
       this.prevState = light;
 
       const textShort = SvitloUtils.getStatus(light).charAt(0).toUpperCase() + SvitloUtils.getStatus(light).slice(1);
-      const textFull = `З ${SvitloUtils.formatDate(timestamp)} ${SvitloUtils.getStatus(light)}`;
+      const supDate = SvitloUtils.isToday(timestamp) ? '' : `<sup>(${SvitloUtils.formatDate(timestamp, 'd/MM')})</sup>`;
+      const textFull = `З ${SvitloUtils.formatDate(timestamp, 'HH:mm')}${supDate} ${SvitloUtils.getStatus(light)}`;
 
-      document.getElementById('status')!.innerText = textFull;
+      document.getElementById('status')!.innerHTML = textFull;
       // eslint-disable-next-line no-undef
       (<HTMLImageElement>document.getElementById('lamp-logo')).src = `assets/lamp_${SvitloUtils.getState(light)}.svg`;
 
@@ -125,9 +126,13 @@ export class Svitlo {
       return `<div class="row ${SvitloUtils.getState(item.light)}">
         <img src="assets/lamp_${SvitloUtils.getState(item.light)}.svg" title="${
         item.light ? 'Увімкнено' : 'Вимкнено'
-      }" class="icon"/> <div class="time">${SvitloUtils.formatDate(item.timestamp, true)}</div> <div class="diff ${SvitloUtils.getState(
-        !item.light
-      )}">${SvitloUtils.formatDuration(item.timestamp, data[index + 1]?.timestamp || item.timestamp)}</div></div>`;
+      }" class="icon"/> <div class="time">${SvitloUtils.formatDate(
+        item.timestamp,
+        'EEE, dd MMM, HH:mm'
+      )}</div> <div class="diff ${SvitloUtils.getState(!item.light)}">${SvitloUtils.formatDuration(
+        item.timestamp,
+        data[index + 1]?.timestamp || item.timestamp
+      )}</div></div>`;
     });
 
     document.getElementById('stats')!.innerHTML = table.join('\n');

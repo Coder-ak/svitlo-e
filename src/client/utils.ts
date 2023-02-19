@@ -1,4 +1,4 @@
-import { format, formatDuration, intervalToDuration } from 'date-fns';
+import { format, formatDuration, intervalToDuration, isToday } from 'date-fns';
 import { uk } from 'date-fns/locale';
 
 export class SvitloUtils {
@@ -6,9 +6,12 @@ export class SvitloUtils {
     return status ? 'світло є!' : 'світла нема :(';
   }
 
-  static formatDate(timestamp: number, long = false) {
-    const dateFormat = long ? 'EEE, dd MMM, HH:mm' : 'HH:mm';
+  static formatDate(timestamp: number, dateFormat: string): string {
     return format(timestamp, dateFormat, { locale: uk });
+  }
+
+  static isToday(timestamp: number): boolean {
+    return isToday(timestamp);
   }
 
   /**
