@@ -1,19 +1,88 @@
 import { SvitloData } from '../interfaces/svitlo-data';
-import { format, formatDuration, intervalToDuration } from 'date-fns';
-import { uk } from 'date-fns/locale';
 import PullToRefresh from 'pulltorefreshjs';
+import { SvitloUtils } from './utils';
 
 export class Svitlo {
+  private static readonly diffUpdateInterval = 1000; // 1 sec
+
+  private svitloData: SvitloData;
+  private prevState: boolean;
+  private timerId: ReturnType<typeof setInterval> | undefined;
+  private getCurrentStateDebounced = SvitloUtils.debounce_leading(async () => await this.getCurrentState());
+  private startDiffTimerDebounced = SvitloUtils.debounce_leading(() => this.startDiffTimer());
+
   constructor() {
-    this.init();
-    this.stats();
+    this.onInit();
     this.pullToRefresh();
+  }
+
+  private async onInit(): Promise<void> {
+    await this.getCurrentState();
+
+    this.addEventListeners();
+    this.displayDiffTimer();
+    this.startDiffTimerDebounced();
+  }
+
+  private addEventListeners(): void {
+    window.addEventListener('blur', () => {
+      this.stopDiffTimer();
+    });
+    window.addEventListener('focus', () => {
+      this.getCurrentStateDebounced();
+      this.startDiffTimerDebounced();
+    });
+  }
+
+  private async getCurrentState(): Promise<void> {
+    const response = await this.getLightData('/light/rad0');
+
+    this.svitloData = await response.json();
+
+    this.displayStatus();
+  }
+
+  private startDiffTimer() {
+    this.stopDiffTimer();
+    this.timerId = setInterval(this.displayDiffTimer.bind(this), Svitlo.diffUpdateInterval);
+  }
+
+  private stopDiffTimer(): void {
+    clearInterval(this.timerId);
+  }
+
+  private displayDiffTimer() {
+    const { light, timestamp }: SvitloData = this.svitloData;
+    const textDiff = `Світло ${light ? 'є' : 'відсутнє'} ${SvitloUtils.formatDuration(timestamp, new Date().getTime())}`;
+    document.getElementById('vidkl')!.innerText = textDiff;
+  }
+
+  private displayStatus(): void {
+    const { light, timestamp } = this.svitloData;
+
+    if (this.prevState !== light) {
+      this.prevState = light;
+
+      const textShort = SvitloUtils.getStatus(light).charAt(0).toUpperCase() + SvitloUtils.getStatus(light).slice(1);
+      const textFull = `З ${SvitloUtils.formatDate(timestamp)} ${SvitloUtils.getStatus(light)}`;
+
+      document.getElementById('status')!.innerText = textFull;
+      // eslint-disable-next-line no-undef
+      (<HTMLImageElement>document.getElementById('lamp-logo')).src = `assets/lamp_${SvitloUtils.getState(light)}.svg`;
+
+      document.title = textShort;
+
+      // get statistics on status change
+      this.stats();
+    }
   }
 
   private pullToRefresh(): void {
     PullToRefresh.init({
       mainElement: 'body',
-      distMax: 104,
+      distMax: 114,
+      distThreshold: 80,
+      distReload: 94,
       instructionsPullToRefresh: 'Потягніть вниз, щоб оновити',
       instructionsReleaseToRefresh: 'Відпустіть, щоб оновити',
       instructionsRefreshing: 'Оновлюється',
@@ -23,92 +92,25 @@ export class Svitlo {
     });
   }
 
-  private getStatus(status: boolean) {
-    return status ? 'світло є!' : 'світла нема :(';
-  }
-
-  private formatDate(timestamp: number, long = false) {
-    const dateFormat = long ? 'EEE, dd MMM, HH:mm' : 'HH:mm';
-    return format(timestamp, dateFormat, { locale: uk });
-  }
-
-  /**
-   * Calculates and formats the duration between a start and end time.
-   *
-   * @param {number} start - The start time in milliseconds since the Unix epoch.
-   * @param {number} end - The end time in milliseconds since the Unix epoch.
-   * @returns {string} - A string representation of the duration in a human-readable format.
-   *
-   * @example
-   * const start = new Date(2021, 0, 1).getTime();
-   * const end = new Date(2021, 0, 2).getTime();
-   * console.log(formatDuration(start, end));
-   * // Output: '1д 0:0:0'
-   */
-  private formatDuration(start: number, end: number): string {
-    const duration = intervalToDuration({ start, end });
-    return formatDuration(duration, {
-      delimiter: '',
-      format: ['days', 'hours', 'minutes', 'seconds'],
-      zero: true,
-      locale: {
-        formatDistance: (_token, count) => {
-          if (_token === 'xDays') {
-            return count ? count + 'д ' : '';
-          }
-          return `${this.zeroPad(count)}${_token !== 'xSeconds' ? ':' : ''}`;
-        },
-      },
-    });
-  }
-
-  /**
-   * Adds leading zeros to a number until it reaches a certain length.
-   *
-   * @param {string} num - The number to pad with zeros.
-   * @returns {string} The padded number.
-   */
-  private zeroPad(num: string): string {
-    return String(num).padStart(2, '0');
-  }
-
-  private getState(light: boolean): string {
-    return light ? 'on' : 'off';
-  }
-
-  private showDiff({ light, timestamp }: SvitloData) {
-    const textDiff = `Світло ${light ? 'є' : 'відсутнє'} ${this.formatDuration(timestamp, new Date().getTime())}`;
-    document.getElementById('vidkl')!.innerText = textDiff;
-  }
-
   private async getLightData(endpoint: string): Promise<Response> {
-    const response = await fetch(endpoint);
+    let response: Response;
+    try {
+      response = await fetch(endpoint);
+    } catch {
+      this.errorHandler();
+    }
     if (!response.ok) {
-      const errorEl = document.getElementById('error');
-      errorEl!.style.display = 'block';
-      errorEl!.innerHTML = '<b>!!!</b> Щось пішло не так. Спробуйте оновити сторінку.';
-      throw new Error('Something went badly wrong!');
+      this.errorHandler();
     }
 
     return response;
   }
 
-  private async init() {
-    const response = await this.getLightData('/light/rad0');
-
-    const { timestamp, light } = await response.json();
-
-    const textShort = this.getStatus(light).charAt(0).toUpperCase() + this.getStatus(light).slice(1);
-    const textFull = `З ${this.formatDate(timestamp)} ${this.getStatus(light)}`;
-
-    document.getElementById('status')!.innerText = textFull;
-    // eslint-disable-next-line no-undef
-    (<HTMLImageElement>document.getElementById('lamp-logo')).src = `assets/lamp_${this.getState(light)}.svg`;
-
-    this.showDiff({ light, timestamp });
-    setInterval(() => this.showDiff({ light, timestamp }), 1000);
-
-    document.title = textShort;
+  private errorHandler(): never {
+    const errorEl = document.getElementById('error');
+    errorEl!.style.display = 'flex';
+    errorEl!.innerHTML = '<div class="error-message"><b>!</b>Виникла помилка. Спробуйте оновити сторінку.</div>';
+    throw new Error('Something went badly wrong!');
   }
 
   private async stats() {
@@ -120,12 +122,12 @@ export class Svitlo {
       if (index === data.length - 1) {
         return;
       }
-      return `<div class="row ${this.getState(item.light)}">
-        <img src="assets/lamp_${this.getState(item.light)}.svg" title="${
+      return `<div class="row ${SvitloUtils.getState(item.light)}">
+        <img src="assets/lamp_${SvitloUtils.getState(item.light)}.svg" title="${
         item.light ? 'Увімкнено' : 'Вимкнено'
-      }" class="icon"/> <div class="time">${this.formatDate(item.timestamp, true)}</div> <div class="diff ${this.getState(
+      }" class="icon"/> <div class="time">${SvitloUtils.formatDate(item.timestamp, true)}</div> <div class="diff ${SvitloUtils.getState(
         !item.light
-      )}">${this.formatDuration(item.timestamp, data[index + 1]?.timestamp || item.timestamp)}</div></div>`;
+      )}">${SvitloUtils.formatDuration(item.timestamp, data[index + 1]?.timestamp || item.timestamp)}</div></div>`;
     });
 
     document.getElementById('stats')!.innerHTML = table.join('\n');

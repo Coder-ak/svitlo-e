@@ -1,6 +1,6 @@
 {
   "name": "svitlo-e",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Collect and display power outages info",
   "dependencies": {
     "cors": "^2.8.5",

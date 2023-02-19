@@ -4,7 +4,9 @@
 @text-footer: #999;
 @accent-color: #6a96c4;
 @background: #f7fafd;
-@card-background: #e8eff6;
+@card-bg: #e8eff6;
+@error: #721c24;
+@error-bg: #f8d7da;
 
 /* Reset */
 *,
@@ -78,12 +80,41 @@ a {
   text-align: center;
 }
 
-.link {
-  text-transform: uppercase;
-}
-
 .p-small {
   font: 400 0.875rem/1.5rem "Open Sans", sans-serif;
+}
+
+.error {
+  display: none;
+  justify-content: center;
+  position: absolute;
+  top: 80px;
+  width: 100%;
+  
+
+  .error-message {
+    font-size: 14px;
+    color: @error;
+    background-color: @error-bg;
+    border: 1px solid @error;
+    border-radius: 6px;
+    padding: 8px;
+    width: 21rem;
+    display: flex;
+    align-items: center;
+
+    b {
+      background: @error;
+      border-radius: 50%;
+      width: 18px;
+      line-height: 18px;
+      display: block;
+      text-align: center;
+      color: lighten(@error-bg, 5%);
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+  }
 }
 
 /* Navbar */
@@ -131,7 +162,7 @@ a {
 .cards {
   border-top: 1px solid #c8d4d6;
   padding: 1rem 0;
-  background-color: @card-background;
+  background-color: @card-bg;
 }
 
 .card {
