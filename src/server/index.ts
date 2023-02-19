@@ -42,6 +42,28 @@ const swaggerDocs = () => {
             required: ['light', 'timestamp'],
           },
         },
+        responses: {
+          UnauthorizedError: {
+            description: 'A response that indicates the client is not authorized to perform the requested operation.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      description: 'A message describing the error.',
+                    },
+                  },
+                  required: ['message'],
+                  example: {
+                    message: 'Unauthorized',
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     apis: ['./src/server/*.ts'],
@@ -116,6 +138,40 @@ const getArea = (areaId: string): string => {
   return areas[areaId];
 };
 
+/**
+ * Create a new record for a light event.
+ *
+ * @openapi
+ * /light:
+ *   post:
+ *     summary: Create a new record for a light event.
+ *     tags:
+ *       - Svitlo
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               light:
+ *                 type: boolean
+ *               area:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       '500':
+ *         description: Internal Server Error
+ */
 app.post('/light', authenticateToken, (req, res, next) => {
   const { light, area } = req.body;
 
