@@ -20,6 +20,7 @@
 /dist/server/*
 !/dist/server/assets
 !/dist/client
+/dist/client/index*
 /dist/client/script*
 /dist/client/style*
 
