@@ -37,9 +37,12 @@ export class Svitlo {
   private async getCurrentState(): Promise<void> {
     const response = await this.getLightData('/light/rad0');
 
-    this.svitloData = await response.json();
-
-    this.displayStatus();
+    try {
+      this.svitloData = await response.json();
+      this.displayStatus();
+    } catch {
+      this.errorHandler('Дані відсутні');
+    }
   }
 
   private startDiffTimer() {
@@ -107,10 +110,10 @@ export class Svitlo {
     return response;
   }
 
-  private errorHandler(): never {
+  private errorHandler(message?: string): never {
     const errorEl = document.getElementById('error');
     errorEl!.style.display = 'flex';
-    errorEl!.innerHTML = '<div class="error-message"><b>!</b>Виникла помилка. Спробуйте оновити сторінку.</div>';
+    errorEl!.innerHTML = `<div class="error-message"><b>!</b>${message || 'Виникла помилка. Спробуйте оновити сторінку.'}</div>`;
     throw new Error('Something went badly wrong!');
   }
 
