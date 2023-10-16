@@ -1,11 +1,8 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import Nedb from 'nedb';
-import Jimp from 'jimp';
-import Randomstring from 'randomstring';
 import jwt, { Secret } from 'jsonwebtoken';
 import { SvitloData } from '../interfaces/svitlo-data';
-import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 
@@ -106,36 +103,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-const getStatus = (status: boolean) => {
-  return status ? 'світло є!' : 'світла нема :(';
-};
-
-const formatDate = (timestamp: number, long = false) => {
-  const options = long ? { weekday: 'long', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' } : { timeStyle: 'short' };
-  return new Date(timestamp).toLocaleTimeString('uk-UA', <any>options);
-};
-
-const drawImage = async (data: SvitloData) => {
-  const font = await Jimp.loadFont(path.join(__dirname, '/assets/arial-bold.fnt'));
-  const imgPath = `/assets/light_${data.light ? 'on' : 'off'}.jpeg`;
-  const image = await Jimp.read(path.join(__dirname, imgPath));
-  const textFull = `З ${formatDate(data.timestamp)} ${getStatus(data.light)}`;
-
-  image.print(
-    font,
-    0,
-    -50,
-    {
-      text: textFull,
-      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-      alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM,
-    },
-    600,
-    600
-  );
-  return image;
-};
-
 const areas: { [key: string]: string } = {
   rad0: 'rad0',
   rad1: 'rad1',
@@ -233,7 +200,7 @@ app.post('/light', authenticateToken, (req, res, next) => {
  * @returns {Object} The light data for the specified area or all areas.
  * @throws {Error} If an error occurs while retrieving the data.
  */
-app.get('/light/:id?', (req, res) => {
+app.get('/light/:id(rad\\d+)?', (req, res) => {
   (db as any)
     .findOne(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
@@ -273,7 +240,7 @@ app.get('/light/:id?', (req, res) => {
  *       '500':
  *         description: Internal Server Error
  */
-app.get('/light/all/:id?', (req, res) => {
+app.get('/light/all/:id(rad\\d+)?', (req, res) => {
   db.find(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
     .sort({ timestamp: -1 })
     .limit(parseInt((req.query.limit as string) || '0', 10))
@@ -282,22 +249,6 @@ app.get('/light/all/:id?', (req, res) => {
         res.status(500).send();
       }
       res.send(data);
-    });
-});
-
-app.get('/light/img/:id?', async (req, res) => {
-  (db as any)
-    .findOne(req.params.id ? { area: getArea(req.params.id) } : {}, { light: 1, timestamp: 1, _id: 0 })
-    .sort({ timestamp: -1 })
-    .exec(async (err: Error, data: SvitloData) => {
-      if (err) {
-        res.status(500).send();
-      }
-      const image = await drawImage(data);
-      const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
-      res.setHeader('Content-type', 'image/jpeg');
-      res.set('Content-disposition', 'inline; filename=' + Randomstring.generate(10) + '.jpeg');
-      res.send(buffer);
     });
 });
 
